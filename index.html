@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N₂O — Associe les symptômes</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,500;0,700;1,300&display=swap');
+
+:root {
+  --bg: #f5f0e8;
+  --paper: #faf7f2;
+  --ink: #1a1410;
+  --muted: #8a8070;
+  --line: #d8d0c0;
+
+  --hypoxic: #d94f3d;
+  --neuro: #2d5fa6;
+  --mechanic: #2a8c5a;
+
+  --hypoxic-light: #fde8e5;
+  --neuro-light: #e5ecf8;
+  --mechanic-light: #e3f4ec;
+
+  --hypoxic-mid: #f5c4bd;
+  --neuro-mid: #b8cef0;
+  --mechanic-mid: #a8dfc2;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, var(--line) 27px, var(--line) 28px);
+  background-size: 100% 28px;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--ink);
+  color: var(--bg);
+  padding: 28px 32px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+header::after {
+  content: 'N₂O';
+  position: absolute;
+  right: -10px;
+  top: -20px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 120px;
+  color: rgba(255,255,255,0.05);
+  pointer-events: none;
+  line-height: 1;
+}
+
+.header-tag {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 8px;
+}
+
+header h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+header p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 300;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+/* ── LEGEND ── */
+.legend {
+  display: flex;
+  gap: 12px;
+  padding: 20px 32px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-item.hypoxic .legend-dot { background: var(--hypoxic); }
+.legend-item.neuro .legend-dot { background: var(--neuro); }
+.legend-item.mechanic .legend-dot { background: var(--mechanic); }
+.legend-item.hypoxic { color: var(--hypoxic); }
+.legend-item.neuro { color: var(--neuro); }
+.legend-item.mechanic { color: var(--mechanic); }
+
+/* ── SCORE BAR ── */
+.score-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  background: var(--paper);
+  border-bottom: 2px solid var(--ink);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.score-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.score-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.score-pill.hypoxic { background: var(--hypoxic-light); color: var(--hypoxic); border: 1.5px solid var(--hypoxic-mid); }
+.score-pill.neuro { background: var(--neuro-light); color: var(--neuro); border: 1.5px solid var(--neuro-mid); }
+.score-pill.mechanic { background: var(--mechanic-light); color: var(--mechanic); border: 1.5px solid var(--mechanic-mid); }
+
+.global-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  color: var(--ink);
+}
+
+.progress-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.pdot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+  transition: background 0.3s;
+}
+.pdot.done { background: var(--ink); }
+
+/* ── MAIN ── */
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+.instructions {
+  background: var(--ink);
+  color: var(--bg);
+  padding: 16px 22px;
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.instructions .icon { font-size: 1.5rem; flex-shrink: 0; }
+
+/* ── GAME AREA ── */
+.game-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 680px) {
+  .game-area { grid-template-columns: 1fr; }
+}
+
+/* ── SYMPTOM CARDS ── */
+.col-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.col-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.cards-pile {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.symptom-card {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  user-select: none;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.symptom-card:hover:not(.matched):not(.selected) {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.symptom-card.selected {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--ink);
+  background: #fffbe6;
+  border-color: #c8a200;
+}
+
+.symptom-card.matched {
+  cursor: default;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: 1px 1px 0 var(--muted);
+  border-color: var(--muted);
+}
+
+.symptom-card.matched.hypoxic { background: var(--hypoxic-light); border-color: var(--hypoxic); opacity: 1; }
+.symptom-card.matched.neuro { background: var(--neuro-light); border-color: var(--neuro); opacity: 1; }
+.symptom-card.matched.mechanic { background: var(--mechanic-light); border-color: var(--mechanic); opacity: 1; }
+
+.symptom-card.wrong-anim {
+  animation: wrongShake 0.35s ease;
+  background: #fde8e5;
+  border-color: var(--hypoxic);
+}
+
+@keyframes wrongShake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.card-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.card-text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.card-match-tag {
+  display: none;
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.symptom-card.matched .card-match-tag { display: block; }
+.matched.hypoxic .card-match-tag { color: var(--hypoxic); }
+.matched.neuro .card-match-tag { color: var(--neuro); }
+.matched.mechanic .card-match-tag { color: var(--mechanic); }
+
+/* ── RISK ZONES ── */
+.risk-zones {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.risk-zone {
+  border: 2px solid;
+  border-radius: 4px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  min-height: 80px;
+}
+
+.risk-zone.hypoxic { border-color: var(--hypoxic); background: var(--hypoxic-light); }
+.risk-zone.neuro { border-color: var(--neuro); background: var(--neuro-light); }
+.risk-zone.mechanic { border-color: var(--mechanic); background: var(--mechanic-light); }
+
+.risk-zone:hover.active-zone {
+  filter: brightness(0.97);
+  transform: scale(1.01);
+}
+
+.risk-zone.pulse {
+  animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.zone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.zone-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 2px;
+}
+
+.risk-zone.hypoxic .zone-name { color: var(--hypoxic); }
+.risk-zone.neuro .zone-name { color: var(--neuro); }
+.risk-zone.mechanic .zone-name { color: var(--mechanic); }
+
+.zone-count {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.risk-zone.hypoxic .zone-count { background: var(--hypoxic-mid); color: var(--hypoxic); }
+.risk-zone.neuro .zone-count { background: var(--neuro-mid); color: var(--neuro); }
+.risk-zone.mechanic .zone-count { background: var(--mechanic-mid); color: var(--mechanic); }
+
+.zone-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 28px;
+}
+
+.chip {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 12px;
+  animation: chipIn 0.25s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes chipIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.risk-zone.hypoxic .chip { background: var(--hypoxic); color: white; }
+.risk-zone.neuro .chip { background: var(--neuro); color: white; }
+.risk-zone.mechanic .chip { background: var(--mechanic); color: white; }
+
+.zone-hint {
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 8px;
+  line-height: 1.5;
+  display: none;
+}
+
+/* ── RESULT PANEL ── */
+.result-panel {
+  display: none;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 4px;
+  padding: 36px 32px;
+  margin-top: 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-panel::before {
+  content: '✓';
+  position: absolute;
+  right: 20px;
+  top: -10px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 120px;
+  color: rgba(255,255,255,0.04);
+  pointer-events: none;
+}
+
+.result-big {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.5rem;
+  letter-spacing: 4px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.result-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0 auto 24px;
+}
+
+.result-breakdown {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.breakdown-item {
+  text-align: center;
+  padding: 12px 20px;
+  border-radius: 4px;
+}
+
+.breakdown-item.hypoxic { background: var(--hypoxic-light); }
+.breakdown-item.neuro { background: var(--neuro-light); }
+.breakdown-item.mechanic { background: var(--mechanic-light); }
+
+.breakdown-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  display: block;
+  line-height: 1;
+}
+
+.breakdown-item.hypoxic .breakdown-num { color: var(--hypoxic); }
+.breakdown-item.neuro .breakdown-num { color: var(--neuro); }
+.breakdown-item.mechanic .breakdown-num { color: var(--mechanic); }
+
+.breakdown-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-top: 4px;
+  display: block;
+  font-weight: 700;
+}
+
+.replay-btn {
+  background: var(--bg);
+  color: var(--ink);
+  border: none;
+  padding: 14px 36px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: opacity 0.2s;
+}
+
+.replay-btn:hover { opacity: 0.85; }
+
+/* ── MISTAKES LOG ── */
+.mistakes-log {
+  margin-top: 28px;
+  text-align: left;
+}
+
+.mistakes-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.mistake-item {
+  background: rgba(255,255,255,0.05);
+  border-left: 3px solid rgba(255,255,255,0.15);
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.7);
+}
+
+.mistake-item strong { color: white; }
+
+/* Confetti */
+.confetti-piece {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 999;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-tag">Activité interactive · Protoxyde d'azote</div>
+  <h1>Associe chaque symptôme<br>à son danger</h1>
+  <p>Sélectionne une carte à gauche, puis clique sur le risque correspondant à droite.</p>
+</header>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item hypoxic"><div class="legend-dot"></div>Risque Hypoxique</div>
+  <div class="legend-item neuro"><div class="legend-dot"></div>Risque Neurologique</div>
+  <div class="legend-item mechanic"><div class="legend-dot"></div>Risque Mécanique</div>
+</div>
+
+<!-- SCORE BAR -->
+<div class="score-bar">
+  <div class="score-pills">
+    <div class="score-pill hypoxic" id="pill-hypoxic">🫁 Hypoxique : 0/4</div>
+    <div class="score-pill neuro" id="pill-neuro">🧠 Neurologique : 0/4</div>
+    <div class="score-pill mechanic" id="pill-mechanic">💥 Mécanique : 0/4</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="progress-dots" id="progressDots"></div>
+    <div class="global-score" id="globalScore">0 / 12</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+  <div class="instructions">
+    <span class="icon">👆</span>
+    <span><strong>Comment jouer :</strong> Clique sur une carte symptôme pour la sélectionner (elle devient jaune), puis clique sur la zone de risque correspondante. Si c'est juste, la carte se place ! Si c'est faux, réessaie.</span>
+  </div>
+
+  <div class="game-area">
+
+    <!-- Colonne gauche : cartes symptômes -->
+    <div>
+      <div class="col-title">Symptômes & effets</div>
+      <div class="cards-pile" id="cardsPile"></div>
+    </div>
+
+    <!-- Colonne droite : zones de risque -->
+    <div>
+      <div class="col-title">Catégories de risques</div>
+      <div class="risk-zones">
+
+        <div class="risk-zone hypoxic" id="zone-hypoxic" onclick="dropInZone('hypoxic')">
+          <div class="zone-header">
+            <div class="zone-name">🫁 Risque Hypoxique</div>
+            <div class="zone-count" id="count-hypoxic">0 / 4</div>
+          </div>
+          <div class="zone-chips" id="chips-hypoxic"></div>
+          <div class="zone-hint" id="hint-hypoxic">
+            Manque d'oxygène dans le sang et les tissus
+          </div>
+        </div>
+
+        <div class="risk-zone neuro" id="zone-neuro" onclick="dropInZone('neuro')">
+          <div class="zone-header">
+            <div class="zone-name">🧠 Risque Neurologique</div>
+            <div class="zone-count" id="count-neuro">0 / 4</div>
+          </div>
+          <div class="zone-chips" id="chips-neuro"></div>
+          <div class="zone-hint" id="hint-neuro">
+            Atteinte du système nerveux par destruction de la B12
+          </div>
+        </div>
+
+        <div class="risk-zone mechanic" id="zone-mechanic" onclick="dropInZone('mechanic')">
+          <div class="zone-header">
+            <div class="zone-name">💥 Risque Mécanique</div>
+            <div class="zone-count" id="count-mechanic">0 / 4</div>
+          </div>
+          <div class="zone-chips" id="chips-mechanic"></div>
+          <div class="zone-hint" id="hint-mechanic">
+            Dangers physiques liés au gaz, aux cartouches et aux accidents
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- RÉSULTATS -->
+  <div class="result-panel" id="resultPanel">
+    <div class="result-big" id="resultBig">BRAVO !</div>
+    <div class="result-sub" id="resultSub"></div>
+    <div class="result-breakdown">
+      <div class="breakdown-item hypoxic">
+        <span class="breakdown-num" id="br-hypoxic">0</span>
+        <span class="breakdown-label">🫁 Hypoxique</span>
+      </div>
+      <div class="breakdown-item neuro">
+        <span class="breakdown-num" id="br-neuro">0</span>
+        <span class="breakdown-label">🧠 Neurologique</span>
+      </div>
+      <div class="breakdown-item mechanic">
+        <span class="breakdown-num" id="br-mechanic">0</span>
+        <span class="breakdown-label">💥 Mécanique</span>
+      </div>
+    </div>
+    <button class="replay-btn" onclick="initGame()">↺ REJOUER</button>
+    <div class="mistakes-log" id="mistakesLog"></div>
+  </div>
+</main>
+
+<script>
+// ── DATA ──
+const ALL_CARDS = [
+  // HYPOXIQUE × 4
+  { id: 'h1', text: 'Perte de conscience (syncope) quelques secondes après l\'inhalation', risk: 'hypoxic', short: 'Syncope rapide' },
+  { id: 'h2', text: 'Vertiges et désorientation immédiate', risk: 'hypoxic', short: 'Vertiges' },
+  { id: 'h3', text: 'Lèvres et ongles qui bleuissent (cyanose)', risk: 'hypoxic', short: 'Cyanose' },
+  { id: 'h4', text: 'Asphyxie mortelle en espace clos (voiture, chambre fermée)', risk: 'hypoxic', short: 'Asphyxie en espace clos' },
+  // NEUROLOGIQUE × 4
+  { id: 'n1', text: 'Fourmillements et engourdissements dans les mains et les pieds', risk: 'neuro', short: 'Fourmillements' },
+  { id: 'n2', text: 'Paralysie progressive des membres pouvant devenir permanente', risk: 'neuro', short: 'Paralysie' },
+  { id: 'n3', text: 'Troubles de la marche et perte d\'équilibre', risk: 'neuro', short: 'Troubles de la marche' },
+  { id: 'n4', text: 'Destruction irréversible de la vitamine B12 par le N₂O', risk: 'neuro', short: 'Destruction B12' },
+  // MÉCANIQUE × 4
+  { id: 'm1', text: 'Gelures des lèvres et de la gorge au contact direct du gaz à −40°C', risk: 'mechanic', short: 'Gelures buccales' },
+  { id: 'm2', text: 'Explosion de la bonbonne sous haute pression avec projections', risk: 'mechanic', short: 'Explosion bonbonne' },
+  { id: 'm3', text: 'Accident de voiture dû à une perte de conscience au volant', risk: 'mechanic', short: 'Accident de voiture' },
+  { id: 'm4', text: 'Chute et traumatisme crânien suite à une syncope debout', risk: 'mechanic', short: 'Chute / TC' },
+];
+
+// ── STATE ──
+let cards = [];
+let selectedCard = null;
+let matched = { hypoxic: 0, neuro: 0, mechanic: 0 };
+let mistakes = [];
+let totalMatched = 0;
+
+// ── SHUFFLE ──
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ── INIT ──
+function initGame() {
+  cards = shuffle([...ALL_CARDS]);
+  selectedCard = null;
+  matched = { hypoxic: 0, neuro: 0, mechanic: 0 };
+  mistakes = [];
+  totalMatched = 0;
+
+  // Reset UI
+  document.getElementById('resultPanel').style.display = 'none';
+  ['hypoxic','neuro','mechanic'].forEach(r => {
+    document.getElementById('chips-' + r).innerHTML = '';
+    document.getElementById('count-' + r).textContent = '0 / 4';
+    document.getElementById('pill-' + r).innerHTML = (r === 'hypoxic' ? '🫁 Hypoxique' : r === 'neuro' ? '🧠 Neurologique' : '💥 Mécanique') + ' : 0/4';
+    document.getElementById('hint-' + r).style.display = 'none';
+    document.getElementById('zone-' + r).classList.remove('active-zone');
+  });
+  document.getElementById('globalScore').textContent = '0 / 12';
+
+  // Build progress dots
+  const dots = document.getElementById('progressDots');
+  dots.innerHTML = Array(12).fill('<div class="pdot"></div>').join('');
+
+  // Build cards
+  const pile = document.getElementById('cardsPile');
+  pile.innerHTML = '';
+  cards.forEach((card, i) => {
+    const el = document.createElement('div');
+    el.className = 'symptom-card';
+    el.id = 'card-' + card.id;
+    el.innerHTML = `
+      <div class="card-number">CARTE ${String(i+1).padStart(2,'0')}</div>
+      <div class="card-text">${card.text}</div>
+      <div class="card-match-tag">✓ ${card.risk === 'hypoxic' ? 'Risque Hypoxique' : card.risk === 'neuro' ? 'Risque Neurologique' : 'Risque Mécanique'}</div>
+    `;
+    el.onclick = () => selectCard(card.id);
+    pile.appendChild(el);
+  });
+}
+
+// ── SELECT CARD ──
+function selectCard(id) {
+  const card = cards.find(c => c.id === id);
+  if (!card) return;
+  const el = document.getElementById('card-' + id);
+  if (el.classList.contains('matched')) return;
+
+  // Deselect previous
+  if (selectedCard) {
+    const prevEl = document.getElementById('card-' + selectedCard.id);
+    if (prevEl) prevEl.classList.remove('selected');
+  }
+
+  if (selectedCard && selectedCard.id === id) {
+    selectedCard = null;
+    return;
+  }
+
+  selectedCard = card;
+  el.classList.add('selected');
+
+  // Show hints on zones
+  ['hypoxic','neuro','mechanic'].forEach(r => {
+    document.getElementById('hint-' + r).style.display = 'block';
+    document.getElementById('zone-' + r).classList.add('active-zone');
+  });
+}
+
+// ── DROP IN ZONE ──
+function dropInZone(risk) {
+  if (!selectedCard) return;
+
+  const card = selectedCard;
+  const el = document.getElementById('card-' + card.id);
+
+  if (card.risk === risk) {
+    // ✅ CORRECT
+    el.classList.remove('selected');
+    el.classList.add('matched', risk);
+    selectedCard = null;
+
+    matched[risk]++;
+    totalMatched++;
+
+    // Add chip
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = card.short;
+    document.getElementById('chips-' + risk).appendChild(chip);
+
+    // Update counts
+    document.getElementById('count-' + risk).textContent = matched[risk] + ' / 4';
+    const rLabel = risk === 'hypoxic' ? '🫁 Hypoxique' : risk === 'neuro' ? '🧠 Neurologique' : '💥 Mécanique';
+    document.getElementById('pill-' + risk).innerHTML = `${rLabel} : ${matched[risk]}/4`;
+
+    // Global score + dots
+    document.getElementById('globalScore').textContent = totalMatched + ' / 12';
+    const dots = document.querySelectorAll('.pdot');
+    if (dots[totalMatched - 1]) dots[totalMatched - 1].classList.add('done');
+
+    // Pulse zone
+    const zone = document.getElementById('zone-' + risk);
+    zone.classList.add('pulse');
+    setTimeout(() => zone.classList.remove('pulse'), 300);
+
+    // Hide hints if done
+    if (matched[risk] === 4) {
+      document.getElementById('hint-' + risk).style.display = 'none';
+      document.getElementById('zone-' + risk).classList.remove('active-zone');
+    }
+
+    if (totalMatched === 12) {
+      setTimeout(showResults, 600);
+    }
+
+  } else {
+    // ❌ WRONG
+    el.classList.add('wrong-anim');
+    setTimeout(() => el.classList.remove('wrong-anim'), 350);
+    mistakes.push({ card: card.text, tried: risk, correct: card.risk });
+  }
+}
+
+// ── RESULTS ──
+function showResults() {
+  // Confetti
+  const colors = ['#d94f3d','#2d5fa6','#2a8c5a','#f5c04a','#1a1410'];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `
+      left: ${Math.random()*100}%;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration: ${1.5 + Math.random()*2}s;
+      animation-delay: ${Math.random()*0.8}s;
+      width: ${6 + Math.random()*8}px;
+      height: ${6 + Math.random()*8}px;
+    `;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+
+  const panel = document.getElementById('resultPanel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  const errorCount = mistakes.length;
+  let big, sub;
+  if (errorCount === 0) {
+    big = 'PARFAIT !';
+    sub = 'Aucune erreur ! Tu maîtrises parfaitement les 3 catégories de dangers du protoxyde d\'azote. Tu es capable de les reconnaître et de les expliquer.';
+  } else if (errorCount <= 3) {
+    big = 'TRÈS BIEN !';
+    sub = `${errorCount} erreur${errorCount > 1 ? 's' : ''} seulement. Tu as une bonne maîtrise des dangers — relis les points ci-dessous pour consolider.`;
+  } else if (errorCount <= 6) {
+    big = 'PAS MAL !';
+    sub = `${errorCount} erreurs. Certaines catégories méritent d'être revues. Les corrections ci-dessous t'aideront à mieux les retenir.`;
+  } else {
+    big = 'À REVOIR';
+    sub = `${errorCount} erreurs. Les 3 catégories de risques sont bien distinctes — reprends l'activité en relisant les explications pour chaque danger.`;
+  }
+
+  document.getElementById('resultBig').textContent = big;
+  document.getElementById('resultSub').textContent = sub;
+  ['hypoxic','neuro','mechanic'].forEach(r => {
+    document.getElementById('br-' + r).textContent = matched[r] + '/4';
+  });
+
+  // Mistakes
+  const log = document.getElementById('mistakesLog');
+  if (mistakes.length > 0) {
+    const rName = r => r === 'hypoxic' ? 'Risque Hypoxique' : r === 'neuro' ? 'Risque Neurologique' : 'Risque Mécanique';
+    log.innerHTML = `<div class="mistakes-title">Erreurs à retenir :</div>` +
+      mistakes.map(m => `
+        <div class="mistake-item">
+          "<strong>${m.card}</strong>"<br>
+          → Placé dans <em>${rName(m.tried)}</em> — Bonne réponse : <strong>${rName(m.correct)}</strong>
+        </div>
+      `).join('');
+  } else {
+    log.innerHTML = '';
+  }
+}
+
+// ── START ──
+initGame();
+</script>
+</body>
+</html>
